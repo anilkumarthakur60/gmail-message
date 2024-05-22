@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thread</title>
+</head>
+<body>
+<h1>Thread</h1>
+<ul>
+    @foreach ($thread->getMessages() as $message)
+        <li>
+            <p><strong>From:</strong> {{ $message->getPayload()->getHeaders()[0]->getValue() }}</p>
+            <p><strong>Subject:</strong> {{ $message->getPayload()->getHeaders()[1]->getValue() }}</p>
+            <p><strong>Snippet:</strong> {{ $message->getSnippet() }}</p>
+            <hr>
+            @if (isset($attachments))
+                @foreach ($attachments as $attachment)
+                    @if ($attachment['filename'])
+                        <p><strong>Attachment:</strong> <a href="{{ route('download.attachment', ['data' => base64_encode($attachment['data']), 'filename' => $attachment['filename']]) }}">{{ $attachment['filename'] }}</a></p>
+                    @endif
+                @endforeach
+            @endif
+        </li>
+    @endforeach
+</ul>
+<a href="{{ route('emails') }}">Back to Emails</a>
+</body>
+</html>
