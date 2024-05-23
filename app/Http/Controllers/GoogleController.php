@@ -38,11 +38,12 @@ class GoogleController extends Controller
 
     /**
      * @throws \Google\Service\Exception
+     * @throws \Exception
      */
     public function getEmails(Request $request)
     {
         $token = session('google_token');
-        if (! $token) {
+        if (!$token) {
             return redirect()->route('google.redirect');
         }
 
@@ -56,19 +57,30 @@ class GoogleController extends Controller
         }
 
         $service = new Google_Service_Gmail($client);
-        $messages = $service->users_messages->listUsersMessages('me', [
-            'q' => $request->query('q'),
-            'maxResults' => 10,
-            'pageToken' => 40,
-        ]);
+        $gmailLabels = $service->users_labels->listUsersLabels('me')->getLabels();
 
-        return view('emails', ['messages' => $messages, 'service' => $service]);
+        $gmailLabels = collect($gmailLabels)->pluck('name')->toArray();
+
+        $param = [
+            'maxResults' => 1,
+            'pageToken' => $request->query('pageToken'),
+        ];
+        if ($request->filled('q')) {
+            $param['q'] = $request->query('q');
+        }
+        if ($request->filled('label') && in_array($request->query('label'), $gmailLabels)) {
+            $param['labelIds'] = $request->query('label');
+        }
+
+        $messages = $service->users_messages->listUsersMessages('me', $param);
+
+        return view('emails', ['messages' => $messages, 'service' => $service,'labels'=>$gmailLabels]);
     }
 
     public function getThread($threadId)
     {
         $token = session('google_token');
-        if (! $token) {
+        if (!$token) {
             return redirect()->route('google.redirect');
         }
 
