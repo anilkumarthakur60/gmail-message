@@ -53,7 +53,7 @@ class GoogleController extends Controller
         }
 
         $service = new Google_Service_Gmail($client);
-        $messages = $service->users_messages->listUsersMessages('me', ['maxResults' => 10]);
+        $messages = $service->users_messages->listUsersMessages('me', ['maxResults' => 50]);
 
         return view('emails', ['messages' => $messages]);
     }
