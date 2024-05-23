@@ -33,13 +33,16 @@ class GoogleController extends Controller
         // Here, we'll just store it in the session for simplicity
         session(['google_token' => $token]);
 
-        return redirect('/')->with('success', 'Google token stored successfully!');
+        return to_route('emails')->with('success', 'Google token stored successfully!');
     }
 
-    public function getEmails()
+    /**
+     * @throws \Google\Service\Exception
+     */
+    public function getEmails(Request $request)
     {
         $token = session('google_token');
-        if (!$token) {
+        if (! $token) {
             return redirect()->route('google.redirect');
         }
 
@@ -53,14 +56,19 @@ class GoogleController extends Controller
         }
 
         $service = new Google_Service_Gmail($client);
-        $messages = $service->users_messages->listUsersMessages('me', ['maxResults' => 50]);
+        $messages = $service->users_messages->listUsersMessages('me', [
+            'q' => $request->query('q'),
+            'maxResults' => 10,
+            'pageToken' => 40,
+        ]);
 
-        return view('emails', ['messages' => $messages]);
+        return view('emails', ['messages' => $messages, 'service' => $service]);
     }
+
     public function getThread($threadId)
     {
         $token = session('google_token');
-        if (!$token) {
+        if (! $token) {
             return redirect()->route('google.redirect');
         }
 
@@ -75,25 +83,24 @@ class GoogleController extends Controller
         $service = new Google_Service_Gmail($client);
         $thread = $service->users_threads->get('me', $threadId);
 
-        $attachments = [];
-        foreach ($thread->getMessages() as $message) {
-            $parts = $message->getPayload()->getParts();
-            foreach ($parts as $part) {
-                if ($part->getFilename() && $part->getBody()) {
-                    $attachmentId = $part->getBody()->getAttachmentId();
-                    $attachment = $service->users_messages_attachments->get('me', $message->getId(), $attachmentId);
-                    $attachments[] = [
-                        'filename' => $part->getFilename(),
-                        'mimeType' => $part->getMimeType(),
-                        'data' => base64_decode(strtr($attachment->getData(), '-_', '+/')),
-                    ];
-                }
-            }
-        }
+        //        $attachments = [];
+        //        foreach ($thread->getMessages() as $message) {
+        //            $parts = $message->getPayload()->getParts();
+        //            foreach ($parts as $part) {
+        //                if ($part->getFilename() && $part->getBody()) {
+        //                    $attachmentId = $part->getBody()->getAttachmentId();
+        //                    $attachment = $service->users_messages_attachments->get('me', $message->getId(), $attachmentId);
+        //                    $attachments[] = [
+        //                        'filename' => $part->getFilename(),
+        //                        'mimeType' => $part->getMimeType(),
+        //                        'data' => base64_decode(strtr($attachment->getData(), '-_', '+/')),
+        //                    ];
+        //                }
+        //            }
+        //        }
 
-        return view('thread', ['thread' => $thread, 'attachments' => $attachments]);
+        return view('thread', ['thread' => $thread, 'service' => $service]);
     }
-
 
     public function downloadAttachment(Request $request)
     {
@@ -102,6 +109,6 @@ class GoogleController extends Controller
 
         return response($data)
             ->header('Content-Type', 'application/octet-stream')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            ->header('Content-Disposition', 'inline; filename="'.$filename.'"');
     }
 }
