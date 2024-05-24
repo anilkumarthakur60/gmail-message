@@ -26,6 +26,10 @@
     <button type="submit">Search</button>
 </form>
 
+<div class="">
+    {{$nextPageToken}}-{{$total}}
+</div>
+
 <ul>
     @foreach ($messages as $message)
         <li>

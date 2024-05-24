@@ -2,38 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EmailToken;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Http\Request;
 
 class GoogleController extends Controller
 {
-    public function redirectToGoogle()
+    public Google_Service_Gmail $googleServiceGmail;
+
+    public function __construct(public Google_Client $client)
     {
-        $client = new Google_Client();
         $client->setClientId(config('google.client_id'));
         $client->setClientSecret(config('google.client_secret'));
         $client->setRedirectUri(config('google.redirect_uri'));
-        $client->addScope(Google_Service_Gmail::GMAIL_READONLY);
+        $client->addScope([
+            Google_Service_Gmail::GMAIL_SEND,
+            Google_Service_Gmail::GMAIL_READONLY,
+            Google_Service_Gmail::GMAIL_COMPOSE
+        ]);
+        $this->googleServiceGmail = new Google_Service_Gmail($client);
+    }
 
-        return redirect($client->createAuthUrl());
+    public function redirectToGoogle()
+    {
+        return redirect($this->client->createAuthUrl());
     }
 
     public function handleGoogleCallback(Request $request)
     {
-        $client = new Google_Client();
-        $client->setClientId(config('google.client_id'));
-        $client->setClientSecret(config('google.client_secret'));
-        $client->setRedirectUri(config('google.redirect_uri'));
-        $client->authenticate($request->get('code'));
+        if ($request->isNotFilled('code')) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        $token = $client->getAccessToken();
-
-        // Save the token for future use (e.g., in the database or session)
-        // Here, we'll just store it in the session for simplicity
-        session(['google_token' => $token]);
-
-        return to_route('emails')->with('success', 'Google token stored successfully!');
+        $d = $this->client->fetchAccessTokenWithAuthCode($request->get('code'));
+        $this->storeTokenToDb($d);
     }
 
     /**
@@ -62,7 +65,7 @@ class GoogleController extends Controller
         $gmailLabels = collect($gmailLabels)->pluck('name')->toArray();
 
         $param = [
-            'maxResults' => 1,
+            'maxResults' => $perPage = 10,
             'pageToken' => $request->query('pageToken'),
         ];
         if ($request->filled('q')) {
@@ -73,8 +76,15 @@ class GoogleController extends Controller
         }
 
         $messages = $service->users_messages->listUsersMessages('me', $param);
+        $total = $messages->getResultSizeEstimate();
 
-        return view('emails', ['messages' => $messages, 'service' => $service,'labels'=>$gmailLabels]);
+        return view('emails', [
+            'messages' => $messages,
+            'service' => $service,
+            'labels' => $gmailLabels,
+            'nextPageToken' => $request->query('pageToken') + $perPage,
+            'total' => $total
+        ]);
     }
 
     public function getThread($threadId)
@@ -122,5 +132,28 @@ class GoogleController extends Controller
         return response($data)
             ->header('Content-Type', 'application/octet-stream')
             ->header('Content-Disposition', 'inline; filename="'.$filename.'"');
+    }
+
+    /**
+     * @throws \Google\Service\Exception
+     */
+    private function storeTokenToDb($token)
+    {
+
+        $email = $this->googleServiceGmail->users->getProfile('me')->getEmailAddress();
+
+        dd($token);
+
+        return EmailToken::query()->updateOrCreate(
+            ['email' => $email],
+            [
+                'access_token' => $token['access_token'],
+                'expires_in' => $token['expires_in'],
+                'created' => $token['created'],
+                'refresh_token' => $token['refresh_token'],
+                'scope' => $token['scope'],
+                'token_type' => $token['token_type'],
+            ]
+        );
     }
 }
