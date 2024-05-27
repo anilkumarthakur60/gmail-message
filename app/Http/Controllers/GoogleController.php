@@ -3,15 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmailToken;
+use Exception;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class GoogleController extends Controller
 {
-    public Google_Service_Gmail $googleServiceGmail;
+    private Google_Service_Gmail $googleServiceGmail;
 
-    public function __construct(public Google_Client $client)
+    private Google_Client $client;
+
+    public function __construct(Google_Client $client)
+    {
+        $this->client = $client;
+        $this->initializeGoogleClient($client);
+        $this->googleServiceGmail = new Google_Service_Gmail($client);
+    }
+
+    private function initializeGoogleClient(Google_Client $client): void
     {
         $client->setClientId(config('google.client_id'));
         $client->setClientSecret(config('google.client_secret'));
@@ -19,107 +30,90 @@ class GoogleController extends Controller
         $client->addScope([
             Google_Service_Gmail::GMAIL_SEND,
             Google_Service_Gmail::GMAIL_READONLY,
-            Google_Service_Gmail::GMAIL_COMPOSE
+            Google_Service_Gmail::GMAIL_COMPOSE,
         ]);
-        $this->googleServiceGmail = new Google_Service_Gmail($client);
     }
 
-    public function redirectToGoogle()
+    public function login()
     {
         return redirect($this->client->createAuthUrl());
     }
 
-    public function handleGoogleCallback(Request $request)
+    public function callback(Request $request)
     {
         if ($request->isNotFilled('code')) {
             abort(403, 'Unauthorized action.');
         }
 
-        $d = $this->client->fetchAccessTokenWithAuthCode($request->get('code'));
-        $this->storeTokenToDb($d);
+        try {
+            $token = $this->client->fetchAccessTokenWithAuthCode($request->get('code'));
+            $this->storeTokenToDb($token);
+
+            return to_route('google.emails');
+        } catch (Exception $exception) {
+            return to_route('google.login');
+        }
     }
 
     /**
      * @throws \Google\Service\Exception
-     * @throws \Exception
      */
-    public function getEmails(Request $request)
+    public function emails(Request $request)
     {
-        $token = session('google_token');
-        if (!$token) {
-            return redirect()->route('google.redirect');
+        $emailToken = $this->getEmailToken();
+        if (!$emailToken) {
+            return redirect()->route('google.login');
         }
 
-        $client = new Google_Client();
-        $client->setAccessToken($token);
+        $client = $this->initializeClientWithToken($emailToken);
 
         if ($client->isAccessTokenExpired()) {
-            // Refresh the token if it's expired
-            $client->refreshToken($client->getRefreshToken());
-            session(['google_token' => $client->getAccessToken()]);
+            $newToken = $this->refreshAccessToken($client);
+            $this->storeTokenToDb($newToken);
         }
 
         $service = new Google_Service_Gmail($client);
-        $gmailLabels = $service->users_labels->listUsersLabels('me')->getLabels();
-
-        $gmailLabels = collect($gmailLabels)->pluck('name')->toArray();
+        $gmailLabels = collect($service->users_labels->listUsersLabels('me')->getLabels())->pluck('name')->toArray();
 
         $param = [
-            'maxResults' => $perPage = 10,
+            'maxResults' => 10,
             'pageToken' => $request->query('pageToken'),
+            'q' => $request->query('q'),
+            'labelIds' => $request->filled('label') && in_array($request->query('label'),
+                $gmailLabels) ? $request->query('label') : null,
         ];
-        if ($request->filled('q')) {
-            $param['q'] = $request->query('q');
-        }
-        if ($request->filled('label') && in_array($request->query('label'), $gmailLabels)) {
-            $param['labelIds'] = $request->query('label');
-        }
 
-        $messages = $service->users_messages->listUsersMessages('me', $param);
+        $messages = $service->users_messages->listUsersMessages('me', array_filter($param));
         $total = $messages->getResultSizeEstimate();
 
         return view('emails', [
             'messages' => $messages,
             'service' => $service,
             'labels' => $gmailLabels,
-            'nextPageToken' => $request->query('pageToken') + $perPage,
-            'total' => $total
+            'nextPageToken' =>$messages->getNextPageToken(),
+            'total' => $total,
         ]);
     }
 
-    public function getThread($threadId)
+    /**
+     * @throws \Google\Service\Exception
+     */
+    public function thread($threadId)
     {
-        $token = session('google_token');
-        if (!$token) {
+        $emailToken = $this->getEmailToken();
+        if (!$emailToken) {
             return redirect()->route('google.redirect');
         }
 
-        $client = new Google_Client();
-        $client->setAccessToken($token);
+        $client = $this->initializeClientWithToken($emailToken);
 
         if ($client->isAccessTokenExpired()) {
-            $client->refreshToken($client->getRefreshToken());
-            session(['google_token' => $client->getAccessToken()]);
+            $newToken = $this->refreshAccessToken($client);
+            $this->storeTokenToDb($newToken);
         }
 
         $service = new Google_Service_Gmail($client);
         $thread = $service->users_threads->get('me', $threadId);
-
-        //        $attachments = [];
-        //        foreach ($thread->getMessages() as $message) {
-        //            $parts = $message->getPayload()->getParts();
-        //            foreach ($parts as $part) {
-        //                if ($part->getFilename() && $part->getBody()) {
-        //                    $attachmentId = $part->getBody()->getAttachmentId();
-        //                    $attachment = $service->users_messages_attachments->get('me', $message->getId(), $attachmentId);
-        //                    $attachments[] = [
-        //                        'filename' => $part->getFilename(),
-        //                        'mimeType' => $part->getMimeType(),
-        //                        'data' => base64_decode(strtr($attachment->getData(), '-_', '+/')),
-        //                    ];
-        //                }
-        //            }
-        //        }
 
         return view('thread', ['thread' => $thread, 'service' => $service]);
     }
@@ -137,23 +131,49 @@ class GoogleController extends Controller
     /**
      * @throws \Google\Service\Exception
      */
-    private function storeTokenToDb($token)
+    private function storeTokenToDb(array $token): void
     {
-
         $email = $this->googleServiceGmail->users->getProfile('me')->getEmailAddress();
 
-        dd($token);
+        $data = [
+            'access_token' => $token['access_token'],
+            'expires_in' => $token['expires_in'],
+            'created' => $token['created'],
+            'scope' => $token['scope'],
+            'token_type' => $token['token_type'],
+        ];
 
-        return EmailToken::query()->updateOrCreate(
-            ['email' => $email],
-            [
-                'access_token' => $token['access_token'],
-                'expires_in' => $token['expires_in'],
-                'created' => $token['created'],
-                'refresh_token' => $token['refresh_token'],
-                'scope' => $token['scope'],
-                'token_type' => $token['token_type'],
-            ]
-        );
+        if (isset($token['refresh_token'])) {
+            $data['refresh_token'] = $token['refresh_token'];
+        }
+
+        EmailToken::query()->updateOrCreate(['email' => $email], $data);
+    }
+
+    private function initializeClientWithToken($token): Google_Client
+    {
+        $client = new Google_Client();
+        $client->setAccessToken([
+            'access_token' => $token['access_token'],
+            'refresh_token' => $token['refresh_token'],
+            'expires_in' => $token['expires_in'],
+            'created' => $token['created'],
+        ]);
+
+        return $client;
+    }
+
+    private function refreshAccessToken(Google_Client $client): array
+    {
+        $client->refreshToken($client->getRefreshToken());
+
+        return $client->getAccessToken();
+    }
+
+    private function getEmailToken(string $email = 'anilkumarthakur60@gmail.com')
+    {
+        return EmailToken::query()
+            ->where('email', $email)
+            ->first();
     }
 }

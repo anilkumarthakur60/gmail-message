@@ -12,7 +12,7 @@
 @endif
 {{--    @dd(session('google_token'))--}}
 
-<form method="GET" action="{{ route('emails') }}">
+<form method="GET" action="{{ route('google.emails') }}">
     <input type="text" name="q" value="{{ request()->get('q') }}" placeholder="Search emails...">
     <input type="number"
            name="pageToken" value="{{ request()->get('pageToken') }}" placeholder="pageToken...">
@@ -43,7 +43,7 @@
             <p><strong>From:</strong> {{ $from }}</p>
             <p><strong>Subject:</strong> {{ $subject }}</p>
             <p><strong>Snippet:</strong> {!! $msg->getSnippet() !!}</p>
-            <a href="{{ route('thread', ['id' => $message->getThreadId()]) }}">
+            <a href="{{ route('google.thread', ['id' => $message->getThreadId()]) }}">
                 {{ $message->getId() }}
             </a>
             <hr>
