@@ -27,6 +27,7 @@ class GoogleController extends Controller
         $client->setClientId(config('google.client_id'));
         $client->setClientSecret(config('google.client_secret'));
         $client->setRedirectUri(config('google.redirect_uri'));
+        $client->setAccessType('offline');
         $client->addScope([
             Google_Service_Gmail::GMAIL_SEND,
             Google_Service_Gmail::GMAIL_READONLY,
