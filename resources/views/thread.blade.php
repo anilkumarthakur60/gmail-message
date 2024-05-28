@@ -32,13 +32,13 @@
             @if (isset($attachments))
                 @foreach ($attachments as $attachment)
                     @if ($attachment['filename'])
-                        <p><strong>Attachment:</strong> <a href="{{ route('download.attachment', ['data' => base64_encode($attachment['data']), 'filename' => $attachment['filename']]) }}">{{ $attachment['filename'] }}</a></p>
+                        <p><strong>Attachment:</strong> <a href="{{ route('google.download-attachment', ['data' => base64_encode($attachment['data']), 'filename' => $attachment['filename']]) }}">{{ $attachment['filename'] }}</a></p>
                     @endif
                 @endforeach
             @endif
         </li>
     @endforeach
 </ul>
-<a href="{{ route('emails') }}">Back to Emails</a>
+<a href="{{ route('google.emails') }}">Back to Emails</a>
 </body>
 </html>
