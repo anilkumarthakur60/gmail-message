@@ -142,6 +142,7 @@ class GoogleController extends Controller
             'created' => $token['created'],
             'scope' => $token['scope'],
             'token_type' => $token['token_type'],
+            'refresh_token_updated_at' => Carbon::now(),
         ];
 
         if (isset($token['refresh_token'])) {
