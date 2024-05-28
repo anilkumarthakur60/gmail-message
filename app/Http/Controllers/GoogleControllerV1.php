@@ -8,9 +8,9 @@ use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+
 class GoogleControllerV1 extends Controller
 {
-
     private Google_Service_Gmail $googleServiceGmail;
 
     public function __construct(private readonly Google_Client $client)
@@ -43,7 +43,7 @@ class GoogleControllerV1 extends Controller
     public function index(Request $request)
     {
         $emailToken = $this->getEmailToken();
-        if (!$emailToken) {
+        if (! $emailToken) {
             return $this->login();
         }
 
@@ -57,12 +57,12 @@ class GoogleControllerV1 extends Controller
         $gmailLabels = collect($service->users_labels->listUsersLabels('me')->getLabels())->pluck('name')->toArray();
         $param = $this->buildQueryParams($request, $gmailLabels);
         $messages = $service->users_messages->listUsersMessages('me', array_filter($param));
-        $filters = $request->only(['search', 'type', 'label', 'client']);
+        $filters = $request->only(['search', 'label']);
 
-        $messages = $this->processMessages($messages, $service);
+        $messageData = $this->processMessages($messages, $service);
 
-        return  [
-            'data' => $messages,
+        return [
+            'data' => $messageData,
             'filters' => $filters,
             'labels' => $gmailLabels,
             'nextPageToken' => $messages->getNextPageToken(),
@@ -73,7 +73,7 @@ class GoogleControllerV1 extends Controller
     public function attachmentDownload(Request $request, $messageId, $filename)
     {
         $emailToken = $this->getEmailToken();
-        if (!$emailToken) {
+        if (! $emailToken) {
             return $this->login();
         }
 
@@ -84,7 +84,8 @@ class GoogleControllerV1 extends Controller
         }
 
         $service = new Google_Service_Gmail($client);
-        $attachmentPart = $this->findAttachmentPart($service->users_messages->get('me', $messageId)->getPayload()->getParts(), $filename);
+        $attachmentPart = $this->findAttachmentPart($service->users_messages->get('me',
+            $messageId)->getPayload()->getParts(), $filename);
 
         if ($attachmentPart) {
             $attachment = $service->users_messages_attachments->get('me', $messageId, $attachmentPart['attachmentId']);
@@ -92,7 +93,7 @@ class GoogleControllerV1 extends Controller
 
             return response($data)
                 ->header('Content-Type', $attachmentPart['mimeType'])
-                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+                ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
         }
 
         return response('Attachment not found.', 404);
@@ -100,9 +101,9 @@ class GoogleControllerV1 extends Controller
 
     public function show($threadId, Request $request)
     {
-        $filters = $request->only(['search', 'type', 'label', 'client']);
+        $filters = $request->only(['search', 'label']);
         $emailToken = $this->getEmailToken();
-        if (!$emailToken) {
+        if (! $emailToken) {
             return $this->login();
         }
 
@@ -126,15 +127,14 @@ class GoogleControllerV1 extends Controller
         ];
     }
 
-
-
     private function buildQueryParams(Request $request, array $gmailLabels): array
     {
         return [
             'maxResults' => 10,
             'pageToken' => $request->query('pageToken'),
             'q' => $request->query('search'),
-            'labelIds' => $request->filled('label') && in_array($request->query('label'), $gmailLabels) ? $request->query('label') : null,
+            'labelIds' => $request->filled('label') && in_array($request->query('label'),
+                $gmailLabels) ? $request->query('label') : null,
         ];
     }
 
@@ -149,7 +149,7 @@ class GoogleControllerV1 extends Controller
             $message->created_at = $this->formatDate($headers->firstWhere('name', 'Date')?->getValue());
             $message->snippet = $msg->getSnippet();
             $message->attachments = $this->extractAttachments($msg->getPayload()->getParts());
-            $message->read = !in_array('UNREAD', $msg->getLabelIds());
+            $message->read = ! in_array('UNREAD', $msg->getLabelIds());
             $message->starred = in_array('STARRED', $msg->getLabelIds());
             $message->thread_id = $msg->getThreadId();
         }
@@ -160,6 +160,7 @@ class GoogleControllerV1 extends Controller
     private function extractName(?string $email): string
     {
         preg_match('/(.+?)\s*<.*>/', $email, $matches);
+
         return $matches[1] ?? $email;
     }
 
@@ -174,6 +175,7 @@ class GoogleControllerV1 extends Controller
                 ];
             }
         }
+
         return $attachments;
     }
 
@@ -186,6 +188,7 @@ class GoogleControllerV1 extends Controller
         if ($createdAt->isCurrentMonth() || $createdAt->isCurrentYear()) {
             return $createdAt->format('d M');
         }
+
         return $createdAt->format('Y-m-d');
     }
 
@@ -209,17 +212,19 @@ class GoogleControllerV1 extends Controller
                 'snippet' => $message->getSnippet(),
                 'htmlBody' => $this->extractHtmlBody($parts),
                 'attachments' => $this->extractAttachments($parts),
-                'read' => !in_array('UNREAD', $message->getLabelIds()),
+                'read' => ! in_array('UNREAD', $message->getLabelIds()),
                 'starred' => in_array('STARRED', $message->getLabelIds()),
                 'thread_id' => $message->getThreadId(),
             ];
         }
+
         return $threadEmails;
     }
 
     private function extractEmail(?string $header): string
     {
         preg_match('/<(.+)>/', $header, $matches);
+
         return $matches[1] ?? $header;
     }
 
@@ -230,9 +235,9 @@ class GoogleControllerV1 extends Controller
                 return base64_decode(strtr($part->getBody()->getData(), '-_', '+/'));
             }
         }
+
         return '';
     }
-
 
     private function findAttachmentPart($parts, $filename): ?array
     {
@@ -240,7 +245,7 @@ class GoogleControllerV1 extends Controller
             if ($part->getFilename() === $filename && $part->getBody()->getAttachmentId()) {
                 return [
                     'attachmentId' => $part->getBody()->getAttachmentId(),
-                    'mimeType' => $part->getMimeType()
+                    'mimeType' => $part->getMimeType(),
                 ];
             }
             if ($part->getParts()) {
@@ -250,6 +255,7 @@ class GoogleControllerV1 extends Controller
                 }
             }
         }
+
         return null;
     }
 
@@ -273,12 +279,14 @@ class GoogleControllerV1 extends Controller
     private function initializeClientWithToken($token): Google_Client
     {
         $this->client->setAccessToken($token);
+
         return $this->client;
     }
 
     private function refreshAccessToken(Google_Client $client): array
     {
         $client->refreshToken($client->getRefreshToken());
+
         return $client->getAccessToken();
     }
 

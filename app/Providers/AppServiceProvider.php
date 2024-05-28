@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-//        $token = session('google_token');
-//        View::share('google_token', $token);
+        //        $token = session('google_token');
+        //        View::share('google_token', $token);
     }
 }

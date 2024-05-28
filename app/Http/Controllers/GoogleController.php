@@ -62,7 +62,7 @@ class GoogleController extends Controller
     public function emails(Request $request)
     {
         $emailToken = $this->getEmailToken();
-        if (!$emailToken) {
+        if (! $emailToken) {
             return redirect()->route('google.login');
         }
 
@@ -91,7 +91,7 @@ class GoogleController extends Controller
             'messages' => $messages,
             'service' => $service,
             'labels' => $gmailLabels,
-            'nextPageToken' =>$messages->getNextPageToken(),
+            'nextPageToken' => $messages->getNextPageToken(),
             'total' => $total,
         ]);
     }
@@ -102,7 +102,7 @@ class GoogleController extends Controller
     public function thread($threadId)
     {
         $emailToken = $this->getEmailToken();
-        if (!$emailToken) {
+        if (! $emailToken) {
             return redirect()->route('google.redirect');
         }
 

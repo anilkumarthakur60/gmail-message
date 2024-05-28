@@ -3,7 +3,7 @@
 use App\Http\Controllers\GoogleController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('', function(){
+Route::get('', function () {
     return view('welcome');
 })->name('index');
 Route::get('login', [GoogleController::class, 'login'])->name('google.login');
