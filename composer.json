@@ -7,9 +7,12 @@
     "require": {
         "php": "^8.2",
         "anil/fast-api-crud": "^2.0",
+        "anil/laravel-gmail-client": "^6.1",
         "google/apiclient": "^2.16",
         "laravel/framework": "^11.0",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "plank/laravel-mediable": "^6.1",
+        "ext-fileinfo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

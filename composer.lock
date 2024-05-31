@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51a854913eb22c4bba9acba375df20a2",
+    "content-hash": "b6c08c5c215f375ed3a63e6166d8b6e8",
     "packages": [
         {
             "name": "anil/fast-api-crud",
@@ -75,6 +75,76 @@
                 "source": "https://github.com/anilkumarthakur60/fast-api-crud/tree/v2.0.4.12"
             },
             "time": "2024-03-05T04:12:51+00:00"
+        },
+        {
+            "name": "anil/laravel-gmail-client",
+            "version": "v6.1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/anilkumarthakur60/laravel-gmail.git",
+                "reference": "d70c2e7555d9b6d5054644058e6f4cc88b58fb9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/anilkumarthakur60/laravel-gmail/zipball/d70c2e7555d9b6d5054644058e6f4cc88b58fb9f",
+                "reference": "d70c2e7555d9b6d5054644058e6f4cc88b58fb9f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "google/apiclient": "^2.0",
+                "illuminate/auth": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/config": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/database": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/routing": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/session": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "illuminate/support": "~5.8|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+                "php": "^7.4|^8.0|^8.1|^8.2|^8.3",
+                "symfony/mime": "^5.4|^6.0|^7.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "orchestra/testbench": "^v4.18.0|^v5.20.0|^v6.25.0|^8.0",
+                "phpunit/phpunit": "^9.3",
+                "squizlabs/php_codesniffer": "~3.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Dacastro4\\LaravelGmail\\LaravelGmailServiceProvider"
+                    ],
+                    "aliases": {
+                        "LaravelGmail": "Dacastro4\\LaravelGmail\\Facade\\LaravelGmail"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dacastro4\\LaravelGmail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniel Castro",
+                    "email": "danielcastro04@gmail.com",
+                    "homepage": "https://danielcastro.dev"
+                }
+            ],
+            "description": "Gmail API package for Laravel",
+            "keywords": [
+                "api",
+                "gmail",
+                "laravel"
+            ],
+            "support": {
+                "source": "https://github.com/anilkumarthakur60/laravel-gmail/tree/v6.1.1.0"
+            },
+            "time": "2024-05-29T06:03:02+00:00"
         },
         {
             "name": "brick/math",
@@ -781,16 +851,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.356.0",
+            "version": "v0.357.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "8e22b0a6f661f2db3f99abb6ee5a1dcf28d370e7"
+                "reference": "c84b0ac2191d56d40d43bc18e62b37a2781040a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/8e22b0a6f661f2db3f99abb6ee5a1dcf28d370e7",
-                "reference": "8e22b0a6f661f2db3f99abb6ee5a1dcf28d370e7",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/c84b0ac2191d56d40d43bc18e62b37a2781040a9",
+                "reference": "c84b0ac2191d56d40d43bc18e62b37a2781040a9",
                 "shasum": ""
             },
             "require": {
@@ -819,9 +889,9 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.356.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.357.0"
             },
-            "time": "2024-05-18T01:10:18+00:00"
+            "time": "2024-05-27T01:02:20+00:00"
         },
         {
             "name": "google/auth",
@@ -1357,17 +1427,153 @@
             "time": "2023-12-03T19:50:20+00:00"
         },
         {
-            "name": "laravel/framework",
-            "version": "v11.8.0",
+            "name": "intervention/gif",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/laravel/framework.git",
-                "reference": "ceb892a25817c888ef3df4d1a2af9cac53978300"
+                "url": "https://github.com/Intervention/gif.git",
+                "reference": "3a2b5f8a8856e8877cdab5c47e51aab2d4cb23a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/ceb892a25817c888ef3df4d1a2af9cac53978300",
-                "reference": "ceb892a25817c888ef3df4d1a2af9cac53978300",
+                "url": "https://api.github.com/repos/Intervention/gif/zipball/3a2b5f8a8856e8877cdab5c47e51aab2d4cb23a3",
+                "reference": "3a2b5f8a8856e8877cdab5c47e51aab2d4cb23a3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1",
+                "phpunit/phpunit": "^10.0",
+                "slevomat/coding-standard": "~8.0",
+                "squizlabs/php_codesniffer": "^3.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Gif\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@intervention.io",
+                    "homepage": "https://intervention.io/"
+                }
+            ],
+            "description": "Native PHP GIF Encoder/Decoder",
+            "homepage": "https://github.com/intervention/gif",
+            "keywords": [
+                "animation",
+                "gd",
+                "gif",
+                "image"
+            ],
+            "support": {
+                "issues": "https://github.com/Intervention/gif/issues",
+                "source": "https://github.com/Intervention/gif/tree/4.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/interventionio",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/Intervention",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-26T17:23:47+00:00"
+        },
+        {
+            "name": "intervention/image",
+            "version": "3.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Intervention/image.git",
+                "reference": "193324ec88bc5ad4039e57ce9b926ae28dfde813"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Intervention/image/zipball/193324ec88bc5ad4039e57ce9b926ae28dfde813",
+                "reference": "193324ec88bc5ad4039e57ce9b926ae28dfde813",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "intervention/gif": "^4.1",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6",
+                "phpstan/phpstan": "^1",
+                "phpunit/phpunit": "^10.0",
+                "slevomat/coding-standard": "~8.0",
+                "squizlabs/php_codesniffer": "^3.8"
+            },
+            "suggest": {
+                "ext-exif": "Recommended to be able to read EXIF data properly."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Intervention\\Image\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Oliver Vogel",
+                    "email": "oliver@intervention.io",
+                    "homepage": "https://intervention.io/"
+                }
+            ],
+            "description": "PHP image manipulation",
+            "homepage": "https://image.intervention.io/",
+            "keywords": [
+                "gd",
+                "image",
+                "imagick",
+                "resize",
+                "thumbnail",
+                "watermark"
+            ],
+            "support": {
+                "issues": "https://github.com/Intervention/image/issues",
+                "source": "https://github.com/Intervention/image/tree/3.6.4"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/interventionio",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/Intervention",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-05-08T13:53:15+00:00"
+        },
+        {
+            "name": "laravel/framework",
+            "version": "v11.9.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/framework.git",
+                "reference": "60167ce91c59ed5eea2ad4f2a7b6d686fb103ba7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/60167ce91c59ed5eea2ad4f2a7b6d686fb103ba7",
+                "reference": "60167ce91c59ed5eea2ad4f2a7b6d686fb103ba7",
                 "shasum": ""
             },
             "require": {
@@ -1559,20 +1765,20 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2024-05-21T17:57:45+00:00"
+            "time": "2024-05-28T18:16:41+00:00"
         },
         {
             "name": "laravel/prompts",
-            "version": "v0.1.22",
+            "version": "v0.1.23",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/prompts.git",
-                "reference": "37f94de71758dbfbccc9d299b0e5eb76e02a40f5"
+                "reference": "9bc4df7c699b0452c6b815e64a2d84b6d7f99400"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/prompts/zipball/37f94de71758dbfbccc9d299b0e5eb76e02a40f5",
-                "reference": "37f94de71758dbfbccc9d299b0e5eb76e02a40f5",
+                "url": "https://api.github.com/repos/laravel/prompts/zipball/9bc4df7c699b0452c6b815e64a2d84b6d7f99400",
+                "reference": "9bc4df7c699b0452c6b815e64a2d84b6d7f99400",
                 "shasum": ""
             },
             "require": {
@@ -1615,9 +1821,9 @@
             "description": "Add beautiful and user-friendly forms to your command-line applications.",
             "support": {
                 "issues": "https://github.com/laravel/prompts/issues",
-                "source": "https://github.com/laravel/prompts/tree/v0.1.22"
+                "source": "https://github.com/laravel/prompts/tree/v0.1.23"
             },
-            "time": "2024-05-10T19:22:18+00:00"
+            "time": "2024-05-27T13:53:20+00:00"
         },
         {
             "name": "laravel/serializable-closure",
@@ -2224,16 +2430,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.3.1",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "8ff64b92c1b1ec84fcde9f8bb9ff2ca34cb8a77a"
+                "reference": "8eab8983c83c30e0bacbef8d311e3f3b8172727f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/8ff64b92c1b1ec84fcde9f8bb9ff2ca34cb8a77a",
-                "reference": "8ff64b92c1b1ec84fcde9f8bb9ff2ca34cb8a77a",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/8eab8983c83c30e0bacbef8d311e3f3b8172727f",
+                "reference": "8eab8983c83c30e0bacbef8d311e3f3b8172727f",
                 "shasum": ""
             },
             "require": {
@@ -2326,7 +2532,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-01T06:54:22+00:00"
+            "time": "2024-05-24T14:26:34+00:00"
         },
         {
             "name": "nette/schema",
@@ -2923,6 +3129,91 @@
                 }
             ],
             "time": "2024-03-03T02:14:58+00:00"
+        },
+        {
+            "name": "plank/laravel-mediable",
+            "version": "6.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/plank/laravel-mediable.git",
+                "reference": "2b3d1be7d8eae277703a588f888aebab063cb6a9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/plank/laravel-mediable/zipball/2b3d1be7d8eae277703a588f888aebab063cb6a9",
+                "reference": "2b3d1be7d8eae277703a588f888aebab063cb6a9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "guzzlehttp/guzzle": "^7.4.1",
+                "guzzlehttp/psr7": "^2.6",
+                "illuminate/database": "^10.0|^11.0",
+                "illuminate/filesystem": "^10.0|^11.0",
+                "illuminate/support": "^10.0|^11.0",
+                "intervention/image": "^2.7.1|^3.0",
+                "league/flysystem": "^3.0.4",
+                "php": ">=8.1.0",
+                "spatie/image-optimizer": "^1.7",
+                "symfony/http-foundation": "^6.0.3|^7.0",
+                "symfony/mime": "^6.0|^7.0"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^3.166.2",
+                "doctrine/dbal": "^2.11|^3.0",
+                "guzzlehttp/promises": "^1.5.1",
+                "laravel/legacy-factories": "^1.3.0",
+                "league/flysystem-aws-s3-v3": "^3.0",
+                "mockery/mockery": "^1.4.2",
+                "orchestra/testbench": "^8.0|^9.0",
+                "php-coveralls/php-coveralls": "^2.5.2",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.0",
+                "vlucas/phpdotenv": "^5.4.1"
+            },
+            "suggest": {
+                "intervention/image-laravel": "Laravel bindings for the intervention/image package used for image manipulation"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Plank\\Mediable\\MediableServiceProvider"
+                    ],
+                    "aliases": {
+                        "MediaUploader": "Plank\\Mediable\\Facades\\MediaUploader",
+                        "ImageManipulator": "Plank\\Mediable\\Facades\\ImageManipulator"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Plank\\Mediable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sean Fraser",
+                    "email": "sean@plankdesign.com"
+                }
+            ],
+            "description": "A package for easily uploading and attaching media files to models with Laravel",
+            "keywords": [
+                "eloquent",
+                "image",
+                "laravel",
+                "media",
+                "uploader"
+            ],
+            "support": {
+                "issues": "https://github.com/plank/laravel-mediable/issues",
+                "source": "https://github.com/plank/laravel-mediable/tree/6.1.2"
+            },
+            "time": "2024-04-11T04:00:15+00:00"
         },
         {
             "name": "psr/cache",
@@ -3688,6 +3979,61 @@
                 }
             ],
             "time": "2024-04-27T21:32:50+00:00"
+        },
+        {
+            "name": "spatie/image-optimizer",
+            "version": "1.7.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/image-optimizer.git",
+                "reference": "43aff6725cd87bb78ccd8532633cfa8bdc962505"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/image-optimizer/zipball/43aff6725cd87bb78ccd8532633cfa8bdc962505",
+                "reference": "43aff6725cd87bb78ccd8532633cfa8bdc962505",
+                "shasum": ""
+            },
+            "require": {
+                "ext-fileinfo": "*",
+                "php": "^7.3|^8.0",
+                "psr/log": "^1.0 | ^2.0 | ^3.0",
+                "symfony/process": "^4.2|^5.0|^6.0|^7.0"
+            },
+            "require-dev": {
+                "pestphp/pest": "^1.21",
+                "phpunit/phpunit": "^8.5.21|^9.4.4",
+                "symfony/var-dumper": "^4.2|^5.0|^6.0|^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\ImageOptimizer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Freek Van der Herten",
+                    "email": "freek@spatie.be",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Easily optimize images using PHP",
+            "homepage": "https://github.com/spatie/image-optimizer",
+            "keywords": [
+                "image-optimizer",
+                "spatie"
+            ],
+            "support": {
+                "issues": "https://github.com/spatie/image-optimizer/issues",
+                "source": "https://github.com/spatie/image-optimizer/tree/1.7.5"
+            },
+            "time": "2024-05-16T08:48:33+00:00"
         },
         {
             "name": "spatie/laravel-permission",
@@ -9650,7 +9996,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2"
+        "php": "^8.2|^8.3|^8.0|^8.1"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmailToken;
+use Cerbaro\LaravelGmail\Facade\LaravelGmail;
 use Exception;
+use Google\Service\Gmail;
 use Google_Client;
 use Google_Service_Gmail;
 use Illuminate\Http\Request;
@@ -57,10 +59,31 @@ class GoogleController extends Controller
     }
 
     /**
-     * @throws \Google\Service\Exception
+     * @throws \Google\Service\Exception|\Google\Exception
      */
     public function emails(Request $request)
     {
+//        $mm = LaravelGmail::message()->all(100);
+//        $mmm=[];
+//        foreach ( $mm as $key=> $message ) {
+//            $body = $message->getHtmlBody();
+//            $subject = $message->getSubject();
+//            $from = $message->getFrom();
+//            $to = $message->getTo();
+//            $date = $message->getDate();
+//            $attachments = $message->getAttachments();
+//            $message->markAsRead();
+//            $mmm[$key] = [
+//                'body' => $body,
+//                'subject' => $subject,
+//                'from' => $from,
+//                'to' => $to,
+//                'date' => $date,
+//                'attachments' => $attachments,
+//            ];
+//
+//        }
+//        return  $mmm;
         $emailToken = $this->getEmailToken();
         if (! $emailToken) {
             return redirect()->route('google.login');
@@ -73,7 +96,7 @@ class GoogleController extends Controller
             $this->storeTokenToDb($newToken);
         }
 
-        $service = new Google_Service_Gmail($client);
+        $service = new Gmail($client);
         $gmailLabels = collect($service->users_labels->listUsersLabels('me')->getLabels())->pluck('name')->toArray();
 
         $param = [
@@ -85,14 +108,15 @@ class GoogleController extends Controller
         ];
 
         $messages = $service->users_messages->listUsersMessages('me', array_filter($param));
-        $total = $messages->getResultSizeEstimate();
+        $responseOrRequest = $service->users_messages->listUsersMessages('me', array_filter($param));
+
 
         return view('emails', [
-            'messages' => $messages,
+            'messages' => $responseOrRequest,
             'service' => $service,
             'labels' => $gmailLabels,
             'nextPageToken' => $messages->getNextPageToken(),
-            'total' => $total,
+            'total' => $messages->getResultSizeEstimate(),
         ]);
     }
 
@@ -172,7 +196,7 @@ class GoogleController extends Controller
         return $client->getAccessToken();
     }
 
-    private function getEmailToken(string $email = 'anilkumarthakur60@gmail.com')
+    private function getEmailToken(string $email = 'anil@socialbet.com.au')
     {
         return EmailToken::query()
             ->where('email', $email)
