@@ -46,18 +46,18 @@ class SendEmail implements ShouldQueue
 
         // Create the headers for the email
         $headers = [];
-        $headers[] = "From: ".$this->receiver;
-        $headers[] = "To: ".$this->sender;
-        $headers[] = "Subject: ".$this->subject;
+        $headers[] = 'From: '.$this->receiver;
+        $headers[] = 'To: '.$this->sender;
+        $headers[] = 'Subject: '.$this->subject;
         if ($this->cc) {
-            $headers[] = "Cc: ".$this->cc;
-//            $headers[] = "Cc: " . $this->receiver;
+            $headers[] = 'Cc: '.$this->cc;
+            //            $headers[] = "Cc: " . $this->receiver;
         }
         if ($this->bcc) {
-            $headers[] = "Bcc: ".$this->bcc;
+            $headers[] = 'Bcc: '.$this->bcc;
         }
         if ($this->reply_to) {
-            $headers[] = "Reply-To: ".$this->reply_to;
+            $headers[] = 'Reply-To: '.$this->reply_to;
         }
         $headers[] = "Content-Type: multipart/alternative; boundary=\"$boundary\"";
 
@@ -66,21 +66,21 @@ class SendEmail implements ShouldQueue
 
         // Plain text part
         $body[] = "--$boundary";
-        $body[] = "Content-Type: text/plain; charset=UTF-8";
-        $body[] = "Content-Transfer-Encoding: 7bit";
-        $body[] = "";
+        $body[] = 'Content-Type: text/plain; charset=UTF-8';
+        $body[] = 'Content-Transfer-Encoding: 7bit';
+        $body[] = '';
         $body[] = strip_tags($this->body);
 
         // HTML part
         $htmlBody = $this->getHtmlBody();
         $body[] = "--$boundary";
-        $body[] = "Content-Type: text/html; charset=UTF-8";
-        $body[] = "Content-Transfer-Encoding: 7bit";
-        $body[] = "";
+        $body[] = 'Content-Type: text/html; charset=UTF-8';
+        $body[] = 'Content-Transfer-Encoding: 7bit';
+        $body[] = '';
         $body[] = $htmlBody;
 
         // Attach media if any
-        foreach($this->mediaIds as $mediaId) {
+        foreach ($this->mediaIds as $mediaId) {
             $media = Media::query()->find($mediaId);
             if ($media) {
                 $filePath = $media->getUrl();
@@ -91,8 +91,8 @@ class SendEmail implements ShouldQueue
                 $body[] = "--$boundary";
                 $body[] = "Content-Type: $fileMimeType; name=\"$fileName\"";
                 $body[] = "Content-Disposition: attachment; filename=\"$fileName\"";
-                $body[] = "Content-Transfer-Encoding: base64";
-                $body[] = "";
+                $body[] = 'Content-Transfer-Encoding: base64';
+                $body[] = '';
                 $body[] = rtrim(chunk_split(base64_encode($fileContent)));
             }
         }
@@ -101,7 +101,7 @@ class SendEmail implements ShouldQueue
         $body[] = "--$boundary--";
 
         // Join headers and body
-        $rawMessage = implode("\r\n", array_merge($headers, ["", implode("\r\n", $body)]));
+        $rawMessage = implode("\r\n", array_merge($headers, ['', implode("\r\n", $body)]));
         $rawMessage = base64_encode($rawMessage);
         $rawMessage = str_replace(['+', '/', '='], ['-', '_', ''], $rawMessage); // base64url encoding
 

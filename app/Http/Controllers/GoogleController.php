@@ -63,27 +63,27 @@ class GoogleController extends Controller
      */
     public function emails(Request $request)
     {
-//        $mm = LaravelGmail::message()->all(100);
-//        $mmm=[];
-//        foreach ( $mm as $key=> $message ) {
-//            $body = $message->getHtmlBody();
-//            $subject = $message->getSubject();
-//            $from = $message->getFrom();
-//            $to = $message->getTo();
-//            $date = $message->getDate();
-//            $attachments = $message->getAttachments();
-//            $message->markAsRead();
-//            $mmm[$key] = [
-//                'body' => $body,
-//                'subject' => $subject,
-//                'from' => $from,
-//                'to' => $to,
-//                'date' => $date,
-//                'attachments' => $attachments,
-//            ];
-//
-//        }
-//        return  $mmm;
+        //        $mm = LaravelGmail::message()->all(100);
+        //        $mmm=[];
+        //        foreach ( $mm as $key=> $message ) {
+        //            $body = $message->getHtmlBody();
+        //            $subject = $message->getSubject();
+        //            $from = $message->getFrom();
+        //            $to = $message->getTo();
+        //            $date = $message->getDate();
+        //            $attachments = $message->getAttachments();
+        //            $message->markAsRead();
+        //            $mmm[$key] = [
+        //                'body' => $body,
+        //                'subject' => $subject,
+        //                'from' => $from,
+        //                'to' => $to,
+        //                'date' => $date,
+        //                'attachments' => $attachments,
+        //            ];
+        //
+        //        }
+        //        return  $mmm;
         $emailToken = $this->getEmailToken();
         if (! $emailToken) {
             return redirect()->route('google.login');
@@ -109,7 +109,6 @@ class GoogleController extends Controller
 
         $messages = $service->users_messages->listUsersMessages('me', array_filter($param));
         $responseOrRequest = $service->users_messages->listUsersMessages('me', array_filter($param));
-
 
         return view('emails', [
             'messages' => $responseOrRequest,
