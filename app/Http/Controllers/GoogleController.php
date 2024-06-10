@@ -175,20 +175,21 @@ class GoogleController extends Controller
         return $client->getAccessToken();
     }
 
-    private function getEmailToken(string $email = 'anil@socialbet.com.au')
+    private function getEmailToken(string $email = 'anilkumarthakur60@gmail.com')
     {
         return EmailToken::query()
             ->where('email', $email)
             ->first();
     }
-    private  function updateAccessAndRefreshToken(array $data,$email = 'anil@socialbet.com.au')
+
+    private function updateAccessAndRefreshToken(array $data, $email = 'anilkumarthakur60@gmail.com')
     {
         EmailToken::query()->where('email', $email)->first()?->update([
             'access_token' => $data['access_token'],
             'refresh_token' => $data['refresh_token'],
             'expires_in' => $data['expires_in'],
             'created' => $data['created'],
-            'refresh_token_updated_at'=> Carbon::now(),
+            'refresh_token_updated_at' => Carbon::now(),
         ]);
     }
 }
