@@ -34,6 +34,8 @@ class GoogleController extends Controller
             Google_Service_Gmail::GMAIL_SEND,
             Google_Service_Gmail::GMAIL_READONLY,
             Google_Service_Gmail::GMAIL_COMPOSE,
+            Google_Service_Gmail::MAIL_GOOGLE_COM,
+            Google_Service_Gmail::GMAIL_MODIFY,
         ]);
     }
 

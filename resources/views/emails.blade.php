@@ -43,8 +43,10 @@
             <p><strong>From:</strong> {{ $from }}</p>
             <p><strong>Subject:</strong> {{ $subject }}</p>
             <p><strong>Snippet:</strong> {!! $msg->getSnippet() !!}</p>
+            <p><strong>Message ID:</strong> {!! $msg->getId() !!}</p>
+            <p><strong>Thread ID:</strong> {!! $msg->getThreadId() !!}</p>
             <a href="{{ route('google.thread', ['id' => $message->getThreadId()]) }}">
-                {{ $message->getId() }}
+              Message Id  {{ $message->getId() }}
             </a>
             <hr>
         </li>
