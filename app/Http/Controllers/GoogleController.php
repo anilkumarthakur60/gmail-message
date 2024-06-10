@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\EmailToken;
-use Cerbaro\LaravelGmail\Facade\LaravelGmail;
 use Exception;
 use Google\Service\Gmail;
 use Google_Client;
@@ -65,27 +64,6 @@ class GoogleController extends Controller
      */
     public function emails(Request $request)
     {
-        //        $mm = LaravelGmail::message()->all(100);
-        //        $mmm=[];
-        //        foreach ( $mm as $key=> $message ) {
-        //            $body = $message->getHtmlBody();
-        //            $subject = $message->getSubject();
-        //            $from = $message->getFrom();
-        //            $to = $message->getTo();
-        //            $date = $message->getDate();
-        //            $attachments = $message->getAttachments();
-        //            $message->markAsRead();
-        //            $mmm[$key] = [
-        //                'body' => $body,
-        //                'subject' => $subject,
-        //                'from' => $from,
-        //                'to' => $to,
-        //                'date' => $date,
-        //                'attachments' => $attachments,
-        //            ];
-        //
-        //        }
-        //        return  $mmm;
         $emailToken = $this->getEmailToken();
         if (! $emailToken) {
             return redirect()->route('google.login');
