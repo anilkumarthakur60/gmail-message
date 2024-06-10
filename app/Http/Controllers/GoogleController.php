@@ -73,7 +73,7 @@ class GoogleController extends Controller
 
         if ($client->isAccessTokenExpired()) {
             $newToken = $this->refreshAccessToken($client);
-            $this->storeTokenToDb($newToken);
+            $this->updateAccessAndRefreshToken($newToken);
         }
 
         $service = new Gmail($client);
@@ -113,7 +113,7 @@ class GoogleController extends Controller
 
         if ($client->isAccessTokenExpired()) {
             $newToken = $this->refreshAccessToken($client);
-            $this->storeTokenToDb($newToken);
+            $this->updateAccessAndRefreshToken($newToken);
         }
 
         $service = new Google_Service_Gmail($client);
@@ -180,5 +180,15 @@ class GoogleController extends Controller
         return EmailToken::query()
             ->where('email', $email)
             ->first();
+    }
+    private  function updateAccessAndRefreshToken(array $data,$email = 'anil@socialbet.com.au')
+    {
+        EmailToken::query()->where('email', $email)->first()?->update([
+            'access_token' => $data['access_token'],
+            'refresh_token' => $data['refresh_token'],
+            'expires_in' => $data['expires_in'],
+            'created' => $data['created'],
+            'refresh_token_updated_at'=> Carbon::now(),
+        ]);
     }
 }
